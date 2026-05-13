@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SD Pay Cashback Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f4f6f9;
+  color: #1a1a2e;
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+}
+
+.wrap {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.header h1 { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+.header p  { font-size: 13px; color: #6b7280; }
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.field { margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.input-wrap { position: relative; }
+
+.prefix {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+input[type=number] {
+  width: 100%;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 11px 12px 11px 28px;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  color: #1a1a2e;
+  outline: none;
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+  background: #fff;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+input[type=number]:focus { border-color: #3b82f6; }
+
+.quick-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+
+.qbtn {
+  font-size: 11px;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+.qbtn:hover { background: #dbeafe; color: #1d4ed8; }
+
+.slab-pill {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.25s;
+}
+.slab-pill.active { background: #eff6ff; border-color: #bfdbfe; }
+.sp-left { font-size: 13px; font-weight: 600; color: #374151; }
+.sp-right { font-size: 18px; font-weight: 700; color: #3b82f6; }
+
+.slab-bar { display: flex; gap: 5px; margin-top: 10px; }
+.seg { height: 4px; flex: 1; border-radius: 2px; background: #e5e7eb; transition: background 0.3s; }
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  margin-top: 8px;
+  padding: 0;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.range-labels { display: flex; justify-content: space-between; font-size: 10px; color: #9ca3af; margin-top: 4px; }
+
+.result-big {
+  text-align: center;
+  padding: 8px 0 20px;
+  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 20px;
+}
+.result-label { font-size: 12px; color: #9ca3af; font-weight: 500; margin-bottom: 6px; }
+.result-amount { font-size: 42px; font-weight: 700; color: #16a34a; letter-spacing: -0.03em; line-height: 1; }
+.result-sub { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.stat:last-child { border-bottom: none; }
+.stat-key { font-size: 13px; color: #6b7280; }
+.stat-val { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+.stat-val.green { color: #16a34a; }
+.stat-val.blue  { color: #3b82f6; }
+
+.bonus-chip {
+  display: inline-block;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.empty { text-align: center; padding: 20px 0; font-size: 13px; color: #9ca3af; }
+
+.slab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.slab-item {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fff;
+}
+.slab-item:hover { border-color: #93c5fd; background: #f8faff; }
+.slab-item.active-slab { border-color: var(--sc); background: #f8faff; }
+
+.si-name { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.si-rate { font-size: 20px; font-weight: 700; color: var(--sc, #374151); margin-bottom: 2px; }
+.si-range { font-size: 11px; color: #9ca3af; margin-bottom: 10px; }
+.si-divider { height: 1px; background: #f3f4f6; margin-bottom: 8px; }
+.si-row { font-size: 11px; color: #6b7280; margin-bottom: 3px; }
+.si-row strong { color: #374151; font-weight: 600; }
+
+.ref-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.ref-pill {
+  font-size: 11px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.warn {
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.warn-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.warn-text { font-size: 12px; color: #92400e; line-height: 1.6; }
+.warn-text strong { display: block; margin-bottom: 2px; color: #78350f; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>SD Pay Calculator</h1>
+    <p>Enter your wallet balance to see daily &amp; monthly cashback</p>
+  </div>
+
+  <!-- Input -->
+  <div class="card">
+    <div class="card-title">Your Details</div>
+
+    <div class="field">
+      <label>Wallet Balance (₹)</label>
+      <div class="input-wrap">
+        <span class="prefix">₹</span>
+        <input type="number" id="balInput" placeholder="Enter amount" min="0" step="1000" autocomplete="off">
+      </div>
+      <div class="quick-btns">
+        <button class="qbtn" onclick="setAmt(10000)">₹10K</button>
+        <button class="qbtn" onclick="setAmt(25000)">₹25K</button>
+        <button class="qbtn" onclick="setAmt(50000)">₹50K</button>
+        <button class="qbtn" onclick="setAmt(100000)">₹1L</button>
+        <button class="qbtn" onclick="setAmt(300000)">₹3L</button>
+        <button class="qbtn" onclick="setAmt(500000)">₹5L</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Days to Hold: <strong id="daysLabel">30</strong></label>
+      <input type="range" id="daysRange" min="1" max="180" value="30">
+      <div class="range-labels"><span>1</span><span>30</span><span>60</span><span>90</span><span>180</span></div>
+    </div>
+
+    <div class="slab-pill" id="slabPill">
+      <span class="sp-left" id="slabName">No slab selected</span>
+      <span class="sp-right" id="slabRate">—</span>
+    </div>
+    <div class="slab-bar">
+      <div class="seg" id="seg1"></div>
+      <div class="seg" id="seg2"></div>
+      <div class="seg" id="seg3"></div>
+      <div class="seg" id="seg4"></div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="card">
+    <div class="card-title">Your Returns</div>
+    <div id="resultArea">
+      <div class="empty">Enter a balance of ₹1,000 or more to see results</div>
+    </div>
+  </div>
+
+  <!-- Slabs -->
+  <div class="card">
+    <div class="card-title">All Cashback Slabs — tap to autofill</div>
+    <div class="slab-grid" id="slabGrid"></div>
+  </div>
+
+  <!-- Referral -->
+  <div class="card">
+    <div class="card-title">Referral Earnings</div>
+    <p style="font-size:13px;color:#6b7280">15 levels · 3% to 30% commission per level</p>
+    <div class="ref-pills" id="refPills"></div>
+  </div>
+
+  <!-- Warning -->
+  <div class="warn">
+    <div class="warn-icon">⚠️</div>
+    <div class="warn-text">
+      <strong>Regulatory Warning</strong>
+      SD Pay does not appear on the RBI's official list of authorized PPI issuers. Verify platform's regulatory status before depositing funds. Returns are promotional estimates, not guaranteed.
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SLABS = [
+  { label:'Slab 1', min:1000,   max:25000,   rate:0.0015, color:'#3b82f6', range:'₹1K – ₹25K'    },
+  { label:'Slab 2', min:25001,  max:100000,  rate:0.002,  color:'#10b981', range:'₹25K – ₹1L'    },
+  { label:'Slab 3', min:100001, max:500000,  rate:0.0025, color:'#f59e0b', range:'₹1L – ₹5L'     },
+  { label:'Slab 4', min:500001, max:Infinity,rate:0.003,  color:'#ef4444', range:'₹5L+'           },
+];
+
+const REF = [
+  {l:'L1',r:'30%'},{l:'L2',r:'20%'},{l:'L3',r:'15%'},{l:'L4',r:'12%'},{l:'L5',r:'10%'},
+  {l:'L6',r:'8%'},{l:'L7',r:'7%'},{l:'L8',r:'6%'},{l:'L9',r:'5%'},{l:'L10',r:'4%'},
+  {l:'L11',r:'3%'},{l:'L12',r:'3%'},{l:'L13',r:'3%'},{l:'L14',r:'3%'},{l:'L15',r:'3%'},
+];
+
+function inr(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+function getSlab(b) { return SLABS.find(s => b >= s.min && b <= s.max) || null; }
+function calcTotal(bal, days, rate) {
+  const daily = bal * rate;
+  return Math.floor(days/30) * (daily*30*1.5) + (days%30) * daily;
+}
+
+function setAmt(v) { document.getElementById('balInput').value = v; update(); }
+
+function update() {
+  const bal  = parseFloat(document.getElementById('balInput').value) || 0;
+  const days = parseInt(document.getElementById('daysRange').value) || 30;
+  document.getElementById('daysLabel').textContent = days;
+
+  const slab = getSlab(bal);
+  const pill = document.getElementById('slabPill');
+
+  if (slab) {
+    pill.classList.add('active');
+    document.getElementById('slabName').textContent = slab.label + '  ·  ' + slab.range;
+    document.getElementById('slabRate').textContent = (slab.rate*100).toFixed(2) + '% / day';
+    document.getElementById('slabRate').style.color = slab.color;
+    const si = SLABS.indexOf(slab);
+    ['seg1','seg2','seg3','seg4'].forEach((id, i) => {
+      document.getElementById(id).style.background = i <= si ? slab.color : '#e5e7eb';
+    });
+  } else {
+    pill.classList.remove('active');
+    document.getElementById('slabName').textContent = bal > 0 ? 'Minimum ₹1,000 required' : 'No slab selected';
+    document.getElementById('slabRate').textContent = '—';
+    document.getElementById('slabRate').style.color = '#9ca3af';
+    ['seg1','seg2','seg3','seg4'].forEach(id => document.getElementById(id).style.background = '#e5e7eb');
+  }
+
+  // Slab grid
+  document.getElementById('slabGrid').innerHTML = SLABS.map(s => {
+    const isActive = slab && slab.label === s.label;
+    const d = isActive ? bal * s.rate : 0;
+    return `<div class="slab-item ${isActive ? 'active-slab' : ''}" style="--sc:${s.color}" onclick="setAmt(${s.min})">
+      <div class="si-name">${s.label}</div>
+      <div class="si-rate">${(s.rate*100).toFixed(2)}%</div>
+      <div class="si-range">${s.range}</div>
+      <div class="si-divider"></div>
+      <div class="si-row">Daily: <strong>${isActive && bal ? inr(d) : '—'}</strong></div>
+      <div class="si-row">30-day: <strong>${isActive && bal ? inr(d*30) : '—'}</strong></div>
+      <div class="si-row">+Bonus: <strong>${isActive && bal ? inr(d*45) : '—'}</strong></div>
+    </div>`;
+  }).join('');
+
+  // Results
+  const area = document.getElementById('resultArea');
+  if (!slab || bal <= 0) {
+    area.innerHTML = `<div class="empty">Enter a balance of ₹1,000 or more to see results</div>`;
+    return;
+  }
+
+  const daily    = bal * slab.rate;
+  const m30      = daily * 30;
+  const m30bonus = m30 * 1.5;
+  const total    = calcTotal(bal, days, slab.rate);
+  const bonusOn  = days >= 30;
+  const annRate  = ((m30bonus * 12) / bal * 100).toFixed(1);
+
+  area.innerHTML = `
+    <div class="result-big">
+      <div class="result-label">Total earned in ${days} day${days > 1 ? 's' : ''}</div>
+      <div class="result-amount">${inr(total)}</div>
+      <div class="result-sub">${bonusOn ? '50% bonus included' : days + ' days × ' + inr(daily) + '/day'}</div>
+    </div>
+    <div class="stat"><span class="stat-key">Daily cashback</span><span class="stat-val blue">${inr(daily)}</span></div>
+    <div class="stat"><span class="stat-key">30-day (no bonus)</span><span class="stat-val">${inr(m30)}</span></div>
+    <div class="stat"><span class="stat-key">30-day + 50% bonus</span><span class="stat-val green">${inr(m30bonus)}${bonusOn ? ' <span class="bonus-chip">APPLIED</span>' : ''}</span></div>
+    <div class="stat"><span class="stat-key">Bonus status</span><span class="stat-val ${bonusOn ? 'green' : ''}">${bonusOn ? '✓ Bonus earned' : (30-days) + ' more days for bonus'}</span></div>
+    <div class="stat"><span class="stat-key">Annual return (est.)</span><span class="stat-val blue">${annRate}% p.a.</span></div>
+    <div class="stat"><span class="stat-key">Active rate</span><span class="stat-val">${(slab.rate*100).toFixed(2)}% per day</span></div>
+  `;
+}
+
+document.getElementById('refPills').innerHTML = REF.map(r => `<span class="ref-pill">${r.l} · ${r.r}</span>`).join('');
+document.getElementById('balInput').addEventListener('input', update);
+document.getElementById('daysRange').addEventListener('input', update);
+update();
+</script>
+</body>
+</html>
